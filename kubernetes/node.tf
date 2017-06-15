@@ -60,6 +60,10 @@ variable "node_logging_volume_size" {
   default     = "12"
 }
 
+variable "node_elb" {
+  description = "Set the ELB for the node cluster"
+}
+
 /*
 * ------------------------------------------------------------------------------
 * Resources
@@ -77,6 +81,7 @@ resource "aws_autoscaling_group" "node" {
   health_check_type    = "EC2"
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.node.name}"
+  load_balancers       = ["${var.node_elb}"]
 
   lifecycle {
     create_before_destroy = true

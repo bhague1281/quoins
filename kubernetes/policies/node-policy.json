@@ -27,6 +27,15 @@
     },
     {
       "Effect": "Allow",
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Effect": "Allow",
       "Action": "ec2:Describe*",
       "Resource": "*"
     },
