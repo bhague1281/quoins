@@ -171,3 +171,8 @@ output "id" {
 output "dns" {
   value = "${aws_elb.external.dns_name}"
 }
+
+# The security group ID of the ELB
+output "security_group_id" {
+  value = "${aws_security_group.external_elb.id}"
+}
