@@ -19,6 +19,15 @@
     {
       "Effect": "Allow",
       "Action": [
+        "s3:Create*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
         "kms:Decrypt"
       ],
       "Resource": [
