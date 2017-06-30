@@ -188,6 +188,10 @@ variable "bastion_security_group_id" {
   description = "Security Group ID for bastion instance with external SSH allows ssh connections on port 22"
 }
 
+variable "api_security_group_id" {
+  description = "Security Group ID for an API ELB, used to allow incoming connections to Kubernetes."
+}
+
 /*
 * ------------------------------------------------------------------------------
 * Resources
@@ -251,6 +255,14 @@ resource "aws_security_group" "kubernetes" {
     to_port         = 32767
     protocol        = "tcp"
     security_groups = ["${aws_security_group.balancers.id}"]
+  }
+
+  # Allow connections to kubernetes services from API load balancer
+  ingress {
+    from_port       = 30000
+    to_port         = 32767
+    protocol        = "tcp"
+    security_groups = ["${var.api_security_group_id}"]
   }
 
   # Allow all outbound traffic
