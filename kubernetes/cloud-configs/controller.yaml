@@ -31,8 +31,10 @@ coreos:
 
         [Service]
         ExecStartPre=/usr/bin/systemctl is-active flanneld.service
-        Environment=KUBELET_IMAGE_TAG=${kubernetes_version}
-        Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid \
+        Environment="KUBELET_IMAGE_URL=${kubernetes_hyperkube_image_repo}"
+        Environment="KUBELET_IMAGE_TAG=${kubernetes_version}"
+        Environment="RKT_RUN_ARGS=--insecure-options=image --uuid-file-save=/var/run/kubelet-pod.uuid \
+          --set-env-file=/etc/docker-environment.env \
           --volume var-log,kind=host,source=/var/log \
           --mount volume=var-log,target=/var/log \
           --volume dns,kind=host,source=/etc/resolv.conf \
@@ -47,7 +49,8 @@ coreos:
           --allow-privileged=true \
           --pod-manifest-path=/etc/kubernetes/manifests \
           --cluster_dns=${kubernetes_dns_service_ip} \
-          --cluster_domain=cluster.local
+          --cluster_domain=cluster.local \
+          --pod-infra-container-image=${pod_infra_image_repo}:${pod_infra_version}
         ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
         Restart=always
         RestartSec=10
@@ -154,7 +157,13 @@ coreos:
       command: start
       enable: true
       drop-ins:
-        - name: 10-etcd.conf
+        - name: 10-environment.conf
+          content: |
+            [Service]
+            Environment="FLANNEL_IMAGE_URL=${flannel_image_repo}"
+            Environment="FLANNEL_IMAGE_TAG=${flannel_image_version}"
+            Environment="RKT_RUN_ARGS=--insecure-options=image"
+        - name: 20-etcd.conf
           content: |
             [Unit]
             Wants=etcd-cluster-health.service
@@ -314,6 +323,7 @@ write_files:
         containers:
         - name: kube-proxy
           image: ${kubernetes_hyperkube_image_repo}:${kubernetes_version}
+          ${controller_kube_proxy_environment}
           command:
           - /hyperkube
           - proxy
@@ -341,6 +351,7 @@ write_files:
         containers:
         - name: kube-apiserver
           image: ${kubernetes_hyperkube_image_repo}:${kubernetes_version}
+          ${controller_kube_apiserver_environment}
           command:
           - /hyperkube
           - apiserver
@@ -409,6 +420,7 @@ write_files:
         containers:
         - name: kube-controller-manager
           image: ${kubernetes_hyperkube_image_repo}:${kubernetes_version}
+          ${controller_kube_controller_manager_environment}
           command:
           - /hyperkube
           - controller-manager
@@ -454,6 +466,7 @@ write_files:
         containers:
         - name: kube-scheduler
           image: ${kubernetes_hyperkube_image_repo}:${kubernetes_version}
+          ${controller_kube_scheduler_environment}
           command:
           - /hyperkube
           - scheduler
@@ -513,7 +526,7 @@ write_files:
               "containers": [
                 {
                   "name": "kubedns",
-                  "image": "gcr.io/google_containers/kubedns-amd64:1.8",
+                  "image": "${kubedns_image_repo}:${kubedns_version}",
                   "resources": {
                     "limits": {
                       "memory": "170Mi"
@@ -561,12 +574,17 @@ write_files:
                       "containerPort": 10053,
                       "name": "dns-tcp-local",
                       "protocol": "TCP"
+                    },
+                    {
+                      "containerPort": 8081,
+                      "name": "dns-tcp-ready",
+                      "protocol": "TCP"
                     }
                   ]
                 },
                 {
                   "name": "dnsmasq",
-                  "image": "gcr.io/google_containers/kube-dnsmasq-amd64:1.4",
+                  "image": "${kubednsmasq_image_repo}:${kubednsmasq_version}",
                   "livenessProbe": {
                     "failureThreshold": 5,
                     "httpGet": {
@@ -600,7 +618,7 @@ write_files:
                 },
                 {
                   "name": "healthz",
-                  "image": "gcr.io/google_containers/exechealthz-amd64:1.2",
+                  "image": "${exechealthz_image_repo}:${exechealthz_version}",
                   "resources": {
                     "limits": {
                       "memory": "50Mi"
@@ -662,20 +680,17 @@ write_files:
         }
       }
   - path: /etc/systemd/system.conf.d/10-default-env.conf
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${system_proxy}
   - path: /etc/docker-environment.env
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${docker_proxy}
   - path: /etc/profile.env
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${user_proxy}

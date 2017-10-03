@@ -39,6 +39,16 @@ variable "etcd_encrypt_data_volume" {
   default     = "true"
 }
 
+variable "etcd_aws_operator_image_repo" {
+  description = "Docker image repository for the etcd AWS operator image."
+  default     = "quay.io/concur_platform/etcd-aws-operator"
+}
+
+variable "etcd_aws_operator_version" {
+  description = "Version of etcd AWS operator image."
+  default     = "0.0.1"
+}
+
 /*
 * ------------------------------------------------------------------------------
 * Modules
@@ -67,7 +77,11 @@ module "etcd" {
   assume_role_principal_service = "${var.assume_role_principal_service}"
   arn_region                    = "${var.arn_region}"
   etcd_encrypt_data_volume      = "${var.etcd_encrypt_data_volume}"
-  system_environment            = "${var.system_environment}"
-  docker_environment            = "${var.docker_environment}"
-  user_environment              = "${var.user_environment}"
+  http_proxy                    = "${var.http_proxy}"
+  https_proxy                   = "${var.https_proxy}"
+  no_proxy                      = "${var.no_proxy}"
+  aws_cli_image_repo            = "${var.aws_cli_image_repo}"
+  aws_cli_version               = "${var.aws_cli_version}"
+  etcd_aws_operator_image_repo  = "${var.etcd_aws_operator_image_repo}"
+  etcd_aws_operator_version     = "${var.etcd_aws_operator_version}"
 }

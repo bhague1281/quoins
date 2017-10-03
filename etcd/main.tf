@@ -25,6 +25,16 @@ variable "cost_center" {
   description = "The cost center to attach resource usage."
 }
 
+variable "coreos_version" {
+  description = "CoreOS version (https://coreos.com/releases)."
+  default = "1465.8.0"
+}
+
+variable "coreos_channel" {
+  description = "Channel for CoreOS version (https://coreos.com/releases)."
+  default = "stable"
+}
+
 variable "tls_provision" {
   description = "The TLS ca and assets provision script."
 }
@@ -66,6 +76,16 @@ variable "no_proxy" {
   default     = ""
 }
 
+variable "aws_cli_image_repo" {
+  description = "Docker image repository for the AWS CLI image."
+  default     = "quay.io/concur_platform/awscli"
+}
+ 
+variable "aws_cli_version" {
+  description = "Version of AWS CLI image."
+  default     = "0.1.1"
+}
+
 /*
 * ------------------------------------------------------------------------------
 * Resources
@@ -86,7 +106,7 @@ resource "aws_s3_bucket_object" "tls_provision" {
 */
 
 data "template_file" "docker_environment_bootstrap" {
-  template = "${file(format("%s/docker_proxy.config", path.module))}"
+  template = "${file(format("%s/environment/docker_proxy.config", path.module))}"
 
   vars {
     http_proxy  = "${var.http_proxy}"
@@ -96,7 +116,7 @@ data "template_file" "docker_environment_bootstrap" {
 }
 
 data "template_file" "docker_service_proxy_bootstrap" {
-  template = "${file(format("%s/docker_service_proxy_bootstrap.config", path.module))}"
+  template = "${file(format("%s/environment/docker_service_proxy_bootstrap.config", path.module))}"
 
   vars {
     http_proxy         = "${var.http_proxy}"
@@ -111,6 +131,8 @@ data "template_file" "s3_cloudconfig_bootstrap" {
 
   vars {
     name                 = "${var.name}"
+    aws_cli_image_repo   = "${var.aws_cli_image_repo}"
+    aws_cli_version      = "${var.aws_cli_version}"
     docker_environment   = "${data.template_file.docker_environment_bootstrap.rendered}"
     docker_service_proxy = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.docker_service_proxy_bootstrap.rendered : ""}"
   }
@@ -122,7 +144,7 @@ data "aws_ami" "coreos_ami" {
 
   filter {
     name   = "name"
-    values = ["CoreOS-stable-*-hvm"]
+    values = ["${format("CoreOS-%s-%s-hvm", var.coreos_channel, var.coreos_version)}"]
   }
 }
 

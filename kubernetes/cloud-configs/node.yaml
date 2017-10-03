@@ -12,8 +12,10 @@ coreos:
 
         [Service]
         ExecStartPre=/usr/bin/systemctl is-active flanneld.service
-        Environment=KUBELET_IMAGE_TAG=${kubernetes_version}
-        Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid \
+        Environment="KUBELET_IMAGE_URL=${kubernetes_hyperkube_image_repo}"
+        Environment="KUBELET_IMAGE_TAG=${kubernetes_version}"
+        Environment="RKT_RUN_ARGS=--insecure-options=image --uuid-file-save=/var/run/kubelet-pod.uuid \
+          --set-env-file=/etc/docker-environment.env \
           --volume dns,kind=host,source=/etc/resolv.conf \
           --mount volume=dns,target=/etc/resolv.conf \
           --volume var-log,kind=host,source=/var/log \
@@ -31,7 +33,8 @@ coreos:
           --cluster_domain=cluster.local \
           --kubeconfig=/etc/kubernetes/node-kubeconfig.yaml \
           --tls-cert-file=/etc/kubernetes/tls/node.pem \
-          --tls-private-key-file=/etc/kubernetes/tls/node-key.pem
+          --tls-private-key-file=/etc/kubernetes/tls/node-key.pem \
+          --pod-infra-container-image=${pod_infra_image_repo}:${pod_infra_version}
         ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
         Restart=always
         RestartSec=10
@@ -206,6 +209,12 @@ coreos:
     - name: flanneld.service
       command: start
       drop-ins:
+        - name: 10-environment.conf
+          content: |
+            [Service]
+            Environment="FLANNEL_IMAGE_URL=${flannel_image_repo}"
+            Environment="FLANNEL_IMAGE_TAG=${flannel_image_version}"
+            Environment="RKT_RUN_ARGS=--insecure-options=image"
         - name: 40-ExecStartPre-symlink.conf
           content: |
             [Unit]
@@ -340,6 +349,7 @@ write_files:
         containers:
         - name: kube-proxy
           image: ${kubernetes_hyperkube_image_repo}:${kubernetes_version}
+          ${node_kube_proxy_environment}
           command:
           - /hyperkube
           - proxy
@@ -386,20 +396,17 @@ write_files:
             client-certificate: /etc/kubernetes/tls/api-server-client.pem
             client-key: /etc/kubernetes/tls/api-server-client-key.pem
   - path: /etc/systemd/system.conf.d/10-default-env.conf
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${system_proxy}
   - path: /etc/docker-environment.env
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${docker_proxy}
   - path: /etc/profile.env
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${user_proxy}

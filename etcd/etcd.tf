@@ -51,6 +51,26 @@ variable "etcd_encrypt_data_volume" {
   default     = "true"
 }
 
+variable "etcd_aws_operator_image_repo" {
+  description = "Docker image repository for the etcd AWS operator image."
+  default     = "quay.io/concur_platform/etcd-aws-operator"
+ }
+ 
+variable "etcd_aws_operator_version" {
+  description = "Version of etcd AWS operator image."
+  default     = "0.0.1"
+}
+
+variable "etcd_image_repo" {
+  description = "Docker image repository for etcd image"
+  default     = "quay.io/coreos/etcd"
+}
+
+variable "etcd_image_version" {
+  description = "Version of etcd image"
+  default     = "v3.1.5"
+}
+
 /*
 * ------------------------------------------------------------------------------
 * Resources
@@ -238,9 +258,13 @@ data "template_file" "etcd" {
   template = "${file(format("%s/cloud-configs/etcd.yaml", path.module))}"
 
   vars {
-    system_proxy = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.system_proxy.rendered : ""}"
-    docker_proxy = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.docker_proxy.rendered : ""}"
-    user_proxy   = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.user_proxy.rendered : ""}"
+    system_proxy                   = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.system_proxy.rendered : ""}"
+    docker_proxy                   = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.docker_proxy.rendered : ""}"
+    user_proxy                     = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.user_proxy.rendered : ""}"
+    etcd_aws_operator_image_repo   = "${var.etcd_aws_operator_image_repo}"
+    etcd_aws_operator_version      = "${var.etcd_aws_operator_version}"
+    etcd_image_repo                = "${var.etcd_image_repo}"
+    etcd_image_version             = "${var.etcd_image_version}"
   }
 }
 

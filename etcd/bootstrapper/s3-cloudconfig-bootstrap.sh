@@ -37,7 +37,7 @@ ${docker_service_proxy}
 echo -e "${docker_environment}" > /etc/docker-environment.env
 
 # pull the IMAGE if not loaded
-image="quay.io/concur_platform/awscli:0.1.1"
+image="${aws_cli_image_repo}:${aws_cli_version}"
 rc=-1
 until [ $rc -eq 0 ]
 do

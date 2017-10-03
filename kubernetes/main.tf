@@ -137,6 +137,16 @@ variable "cost_center" {
   description = "The cost center to attach resource usage."
 }
 
+variable "coreos_version" {
+  description = "CoreOS version (https://coreos.com/releases)."
+  default = "1465.8.0"
+}
+
+variable "coreos_channel" {
+  description = "Channel for CoreOS version (https://coreos.com/releases)."
+  default = "stable"
+}
+
 variable "tls_provision" {
   description = "The TLS ca and assets provision script."
 }
@@ -149,6 +159,26 @@ variable "kubernetes_hyperkube_image_repo" {
 variable "kubernetes_version" {
   description = "The version of the hyperkube image to use. This is the tag for the hyperkube image repository"
   default     = "v1.6.2_coreos.0"
+}
+
+variable "pod_infra_image_repo" {
+  description = "Docker image repository for the pod infra image."
+  default     = "gcr.io/google_containers/pause-amd64"
+}
+
+variable "pod_infra_version" {
+  description = "Version of pod infra"
+  default     = "3.0"
+}
+
+variable "flannel_image_repo" {
+  description = "Docker image repository for flannel image"
+  default     = "quay.io/coreos/flannel"
+}
+
+variable "flannel_image_version" {
+  description = "Version of flannel image"
+  default     = "v0.7.1"
 }
 
 variable "kubernetes_service_cidr" {
@@ -213,6 +243,16 @@ variable "https_proxy" {
 variable "no_proxy" {
   description = "List of domains or IP's that do not require a proxy."
   default     = ""
+}
+
+variable "aws_cli_image_repo" {
+  description = "Docker image repository for the AWS CLI image."
+  default     = "quay.io/concur_platform/awscli"
+}
+
+variable "aws_cli_version" {
+  description = "Version of AWS CLI image."
+  default     = "0.1.1"
 }
 
 /*
@@ -314,7 +354,7 @@ resource "aws_s3_bucket_object" "tls_provision" {
 */
 
 data "template_file" "docker_environment_bootstrap" {
-  template = "${file(format("%s/docker_proxy.config", path.module))}"
+  template = "${file(format("%s/environment/docker_proxy.config", path.module))}"
 
   vars {
     http_proxy  = "${var.http_proxy}"
@@ -324,7 +364,7 @@ data "template_file" "docker_environment_bootstrap" {
 }
 
 data "template_file" "docker_service_proxy_bootstrap" {
-  template = "${file(format("%s/docker_service_proxy_bootstrap.config", path.module))}"
+  template = "${file(format("%s/environment/docker_service_proxy_bootstrap.config", path.module))}"
 
   vars {
     http_proxy         = "${var.http_proxy}"
@@ -339,6 +379,8 @@ data "template_file" "s3_cloudconfig_bootstrap" {
 
   vars {
     name                 = "${var.name}"
+    aws_cli_image_repo   = "${var.aws_cli_image_repo}"
+    aws_cli_version      = "${var.aws_cli_version}"
     docker_environment   = "${data.template_file.docker_environment_bootstrap.rendered}"
     docker_service_proxy = "${var.http_proxy != "" || var.https_proxy != "" || var.no_proxy != "" ? data.template_file.docker_service_proxy_bootstrap.rendered : ""}"
   }
@@ -350,7 +392,7 @@ data "aws_ami" "coreos_ami" {
 
   filter {
     name   = "name"
-    values = ["CoreOS-stable-*-hvm"]
+    values = ["${format("CoreOS-%s-%s-hvm", var.coreos_channel, var.coreos_version)}"]
   }
 }
 

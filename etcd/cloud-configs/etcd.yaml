@@ -2,8 +2,14 @@
 ---
 coreos:
   update:
-    reboot-strategy: "etcd-lock"
+    reboot-strategy: "off"
   units:
+    - name: update-engine.service
+      command: stop
+      enable: false
+    - name: locksmithd.service
+      command: stop
+      enable: false
     - name: etcd2.service
       enable: false
       command: stop
@@ -18,7 +24,8 @@ coreos:
             After=var-lib-etcd.mount etcd-init.service
 
             [Service]
-            Environment="ETCD_IMAGE_TAG=v3.1.5"
+            Environment="ETCD_IMAGE_URL=${etcd_image_repo}"
+            Environment="ETCD_IMAGE_TAG=${etcd_image_version}"
             Environment="ETCD_PEER_CLIENT_CERT_AUTH=true"
             Environment="ETCD_PEER_TRUSTED_CA_FILE=/etc/ssl/certs/ca-chain.pem"
             Environment="ETCD_PEER_CERT_FILE=/etc/ssl/certs/etcd-peer.pem"
@@ -37,6 +44,7 @@ coreos:
             Environment="ETCD_LISTEN_PEER_URLS=https://%H:2380"
             Environment="ETCD_INITIAL_ADVERTISE_PEER_URLS=https://%H:2380"
             Environment="ETCD_OPTS="
+            Environment="RKT_RUN_ARGS=--insecure-options=image"
             PermissionsStartOnly=true
             ExecStartPre=/usr/bin/systemctl is-active var-lib-etcd.mount
             ExecStartPre=/usr/bin/systemctl is-active etcd-init.service
@@ -139,7 +147,7 @@ write_files:
       #!/bin/bash
 
       # Dyamically create/join the etcd cluster by querying autoscaling group
-      image=quay.io/concur_platform/etcd-aws-operator:0.0.1
+      image=${etcd_aws_operator_image_repo}:${etcd_aws_operator_version}
       /usr/bin/docker run --rm \
         --env-file=/etc/quoin-environment \
         --env-file=/etc/docker-environment.env \
@@ -150,20 +158,17 @@ write_files:
       # Place etcd-environment
       /usr/bin/cp /var/run/coreos/etcd-environment /etc/etcd-environment
   - path: /etc/systemd/system.conf.d/10-default-env.conf
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${system_proxy}
   - path: /etc/docker-environment.env
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${docker_proxy}
   - path: /etc/profile.env
-    filesystem: root
-    mode: 0644
-    contents:
-      inline: |
+    permissions: 0644
+    owner: root:root
+    content: |
         ${user_proxy}
