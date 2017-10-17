@@ -14,13 +14,11 @@
 * with Launch Configurations to launch the Kubernetes cluster. The cluster is launched in
 * an air gapped way using only AWS API's, therefore, by default, there isn't a way to SSH
 * directly to an instance without a bastion. We use our Bastion Quoin to launch on-demand
-* bastions when the need arises. Currently we launch version 1.2.4 of Kubernetes.
+* bastions when the need arises.
 *
 * ## What's Inside
 *
-* * One public subnet and one private subnet in each availability zone.
-* * Subnets are dynamic and react to the number of availability zones within the region.
-* * A NAT gateway in each availability zone.
+* * Subnets that are dynamic and react to the number of availability zones within the region.
 * * Reference to a security group for bastions to use.
 * * CoreOS is used as the host operating system for all instances.
 * * The certificates are used to completely secure the communication between etcd, controllers, and nodes.
@@ -46,24 +44,11 @@
 * * IAM roles to give instances permission to access resources based on their role
 * * Fluent/ElasticSearch/Kibana runs within the cluster to ship all logs to a central location. Only thing needed by the developer is to log to stdout or stderr.
 *
-* ## Note
-*
-* __The TLS assets that you supply, must be encrypted with the supplied KMS Key ARN and encoded with base64.__
-*
-* Example:
-*
-* ```
-* aws --region us-west-2 kms encrypt \
-*    --key-id 709b95f1-90b0-46d3-b1d3-619fb4dfb82a \
-*    --plaintext fileb://$PWD/root-ca.pem \
-*    --output text --query CiphertextBlob > "root-ca.pem.enc.base"
-* ```
-*
 * Usage:
 *
 * ```hcl
 * module "kubernetes" {
-*   source                                = "github.com/concur/quoins//kubernetes"
+*   source                                = "github.com/scipian/quoins//kubernetes"
 *   name                                  = "prod"
 *   role_type                             = "app1"
 *   cost_center                           = "1"
@@ -75,31 +60,6 @@
 *   internal_subnet_ids                   = "subnet-3b018d72,subnet-3bdcb65c,subnet-066e8b5d"
 *   public_key                            = "${file(format("%s/keys/%s.pub", path.cwd, var.name))}"
 *   tls_provision                         = "${file(format("%s/../provision.sh", path.cwd))}"
-*   etcd_instance_type                    = "m3.medium"
-*   etcd_min_size                         = "1"
-*   etcd_max_size                         = "9"
-*   etcd_desired_capacity                 = "1"
-*   etcd_root_volume_size                 = "12"
-*   etcd_data_volume_size                 = "12"
-*   controller_instance_type              = "m3.medium"
-*   controller_min_size                   = "1"
-*   controller_max_size                   = "3"
-*   controller_desired_capacity           = "1"
-*   controller_root_volume_size           = "12"
-*   controller_docker_volume_size         = "12"
-*   node_instance_type                    = "m3.medium"
-*   node_min_size                         = "1"
-*   node_max_size                         = "18"
-*   node_desired_capacity                 = "1"
-*   node_root_volume_size                 = "12"
-*   node_docker_volume_size               = "12"
-*   node_data_volume_size                 = "12"
-*   node_logging_volume_size              = "12"
-*   kubernetes_hyperkube_image_repo       = "quay.io/coreos/hyperkube"
-*   kubernetes_version                    = "v1.6.2_coreos.0"
-*   kubernetes_service_cidr               = "10.3.0.1/24"
-*   kubernetes_dns_service_ip             = "10.3.0.10"
-*   kubernetes_pod_cidr                   = "10.2.0.0/16"
 *   bastion_security_group_id             = "sg-xxxxxxxx"
 * }
 *

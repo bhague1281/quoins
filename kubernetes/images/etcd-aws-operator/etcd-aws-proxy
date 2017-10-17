@@ -7,7 +7,7 @@ package="etcd-aws-proxy"
 version="0.1.1"
 etcd_environment_file_path="/var/run/coreos/etcd-environment"
 etcd_initial_cluster_file_path="/var/run/coreos/initial-cluster"
-discovery_bucket="s3://concur-${QUOIN_NAME}"
+discovery_bucket="s3://scipian-${QUOIN_NAME}"
 
 if [[ ! -f "$etcd_environment_file_path" ]]; then
   echo "$package: $etcd_environment_file_path doesn't exist."

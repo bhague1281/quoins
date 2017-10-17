@@ -1,3 +1,28 @@
+/**
+* This module creates a internal only layout with the following resources
+* inside a network:
+*
+* 1. An internal subnet for each availability zone in a region.
+*
+* Usage:
+*
+* ```hcl
+* module "network_layout" {
+*   source              = "github.com/scipian/quoins//internal-layout"
+*   vpc_id              = "vpc-*****"
+*   availability_zones  = "us-west-2a,us-west-2b,us-west-2c"
+*   internal_subnets    = "172.16.3.0/24,172.16.4.0/24,172.16.5.0/24"
+*   name                = "prod-us-network-layout"
+*   k8_cluster_name     = "<kubernetes-quoin-name>"
+* }
+*
+* provider "aws" {
+*   region = "us-west-2"
+* }
+* ```
+*
+*/
+
 /*
 * ------------------------------------------------------------------------------
 * Variables

@@ -10,13 +10,14 @@
 *
 * ```hcl
 * module "network_layout" {
-*   source              = "github.com/concur/quoins//external-internal-layout"
+*   source              = "github.com/scipian/quoins//external-internal-layout"
 *   vpc_id              = "vpc-*****"
 *   internet_gateway_id = "igw-*****"
 *   availability_zones  = "us-west-2a,us-west-2b,us-west-2c"
 *   external_subnets    = "172.16.0.0/24,172.16.1.0/24,172.16.2.0/24"
 *   internal_subnets    = "172.16.3.0/24,172.16.4.0/24,172.16.5.0/24"
 *   name                = "prod-us-network-layout"
+*   k8_cluster_name     = "<kubernetes-quoin-name>"
 * }
 *
 * provider "aws" {

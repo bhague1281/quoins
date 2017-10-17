@@ -5,7 +5,7 @@
 *
 * ```hcl
 * module "ssh_key_pair" {
-*   source = "github.com/concur/quoins//key-pair"
+*   source = "github.com/scipian/quoins//key-pair"
 *   key_name   = "quoin-bastion"
 *   public_key = "ssh-rsa skdlfjkljasfkdjjkas;dfjksakj ... email@domain.com"
 * }

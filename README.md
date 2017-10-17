@@ -1,4 +1,4 @@
-# Concur Quoins
+# Scipian Quoins
 
 Quoins are a set of [Terraform][terraform] modules used as building blocks for
 an immutable infrastructure. We carefully curated a set of sane defaults for
@@ -47,7 +47,7 @@ Let's compose a configuration that uses the network module:
 
 ```hcl
 module "network" {
-  source   = "github.com/concur/quoins//network"
+  source   = "github.com/scipian/quoins//network"
   cidr     = "172.16.0.0/16"
   name     = "prod-us-network"
 }
@@ -77,4 +77,4 @@ To apply the changeset, let's run the apply command:
 Released under the [MIT License][mit-license]. See [LICENSE][license] for more information.
 
 [mit-license]: http://www.opensource.org/licenses/mit-license.php
-[license]: https://github.com/concur/quoins/blob/master/LICENSE
+[license]: https://github.com/scipian/quoins/blob/master/LICENSE

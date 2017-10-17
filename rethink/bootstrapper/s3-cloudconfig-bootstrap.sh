@@ -8,7 +8,7 @@
 
 # Convention:
 # 1. A bucket should exist that contains role-based cloud-config.yaml
-#  e.g. concur-<cluster-name>-cloudinit/<roleProfile>/cloud-config.yaml
+#  e.g. scipian-<cluster-name>-cloudinit/<roleProfile>/cloud-config.yaml
 # 2. All machines should have instance role profile, with a policy that allows readonly access to this bucket.
 
 # Placement
@@ -16,7 +16,7 @@ region="$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/docume
 availability_zone="$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document/ | jq -r '.availabilityZone')"
 
 # Bucket
-bucket="concur-${name}"
+bucket="scipian-${name}"
 
 # Determine our role
 role="rethink"

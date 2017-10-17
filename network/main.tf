@@ -6,7 +6,7 @@
 *
 * ```hcl
 * module "network" {
-*   source = "github.com/concur/quoins//network"
+*   source = "github.com/scipian/quoins//network"
 *   cidr   = "172.16.0.0/16"
 *   name   = "prod-us-network"
 * }

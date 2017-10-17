@@ -11,11 +11,11 @@
 *
 * ```hcl
 * module "bastion" {
-*   source                = "github.com/concur/quoins//bastion"
+*   source                = "github.com/scipian/quoins//bastion"
+*   availability_zone     = "us-west-2a"
 *   bastion_ami_id        = "ami-*****"
-*   bastion_instance_type = "t2.micro"
 *   bastion_key_name      = "ssh-key"
-*   security_groups       = "sg-*****,sg-*****"
+*   security_group_ids    = "sg-*****,sg-*****"
 *   subnet_id             = "pub-1"
 *   cost_center           = "1000"
 *   role_type             = "abcd"

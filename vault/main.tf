@@ -1,3 +1,40 @@
+/**
+* This module creates a Vault cluster.
+*
+*
+* Usage:
+*
+* ```hcl
+* module "vault" {
+*   source                    = "github.com/scipian/quoins//vault"
+*   availability_zones        = "us-west-2a,us-west-2b,us-west-2c"
+*   name                      = "prod-rethink"
+*   region                    = "us-west-2"
+*   role_type                 = "app1"
+*   cost_center               = "1"
+*   bastion_security_group_id = "sg-xxxxxxxx"
+*   vpc_id                    = "vpc-1234565"
+*   vpc_cidr                  = "172.16.0.0/16"
+*   subnet_ids                = "subnet-3b018d72,subnet-3bdcb65c,subnet-066e8b5d"
+*   intermediate_cert         = "${file(format("%s/tls/intermediate-ca.pem.enc.base", path.cwd))}"
+*   key_name                  = "vault"
+*   root_cert                 = "${file(format("%s/tls/root-ca.pem.enc.base", path.cwd))}"
+*   vault_elb_cert            = "${file(format("%s/tls/vault_elb.pem", path.cwd))}"
+*   vault_elb_key             = "${file(format("%s/tls/vault_elb_key.pem", path.cwd))}"
+*   vault_etcd_client_cert    = "${file(format("%s/tls/vault_etcd_client.pem.enc.base", path.cwd))}"
+*   vault_etcd_client_key     = "${file(format("%s/tls/vault_etcd_client_key.pem.enc.base", path.cwd))}"
+*   vault_server_cert         = "${file(format("%s/tls/vault_server.pem.enc.base", path.cwd))}"
+*   vault_server_cert_plain   = "${file(format("%s/tls/vault_server_plain.pem", path.cwd))}"
+*   vault_server_key          = "${file(format("%s/tls/vault_server_key.pem.enc.base", path.cwd))}"
+* }
+*
+* provider "aws" {
+*   region = "us-west-2"
+* }
+* ```
+*
+*/
+
 /*
 * ------------------------------------------------------------------------------
 * Variables

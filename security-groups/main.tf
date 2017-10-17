@@ -5,7 +5,7 @@
 *
 * ```hcl
 * module "security_groups" {
-*   source = "github.com/concur/quoins//security-groups"
+*   source = "github.com/scipian/quoins//security-groups"
 *   vpc_id = "vpc-*****"
 *   name   = "quoin"
 * }

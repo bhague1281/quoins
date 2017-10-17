@@ -5,7 +5,7 @@
 *
 * ```hcl
 * module "elb-unsecure" {
-*   source             = "github.com/concur/quoins//elb-external"
+*   source             = "github.com/scipian/quoins//elb-external"
 *   name               = "elb-unsecure"
 *   vpc_id             = "vpc-123456"
 *   subnet_ids         = "subnet-123456,subnet-123457,subnet-123458"
@@ -17,7 +17,7 @@
 * }
 
 * module "elb-secure" {
-*   source             = "github.com/concur/quoins//elb-external"
+*   source             = "github.com/scipian/quoins//elb-external"
 *   name               = "elb-secure"
 *   vpc_id             = "vpc-123456"
 *   subnet_ids         = "subnet-123456,subnet-123457,subnet-123458"

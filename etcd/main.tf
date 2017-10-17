@@ -1,3 +1,31 @@
+/**
+* This module creates an etcd cluster.
+*
+* Usage:
+*
+* ```hcl
+* module "etcd" {
+*   source                    = "github.com/scipian/quoins//etcd"
+*   name                      = "elb-unsecure"
+*   availability_zones        = "us-west-2a,us-west-2b,us-west-2c"
+*   bastion_security_group_id = "sg-****"
+*   cost_center               = "1000"
+*   key_name                  = "quoin-etcd"
+*   name                      = "prod-us-etcd"
+*   region                    = "us-west-2"
+*   role_type                 = "abcd"
+*   subnet_ids                = "pub-1,pub-2,pub-3"
+*   tls_provision             = "${file(format("%s/../provision.sh", path.cwd))}"
+*   vpc_cidr                  = "172.16.0.0/16"
+*   vpc_id                    = "vpc-123456"
+* }
+
+* provider "aws" {
+*   region = "us-west-2"
+* }
+* ```
+*/
+
 /*
 * ------------------------------------------------------------------------------
 * Variables

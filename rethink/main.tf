@@ -1,3 +1,31 @@
+/**
+* This module creates a RethinkDB cluster.
+*
+*
+* Usage:
+*
+* ```hcl
+* module "rethink" {
+*   source                    = "github.com/scipian/quoins//rethink"
+*   availability_zones        = "us-west-2a,us-west-2b,us-west-2c"
+*   name                      = "prod-rethink"
+*   region                    = "us-west-2"
+*   role_type                 = "app1"
+*   cost_center               = "1"
+*   bastion_security_group_id = "sg-xxxxxxxx"
+*   vpc_id                    = "vpc-1234565"
+*   vpc_cidr                  = "172.16.0.0/16"
+*   subnet_ids                = "subnet-3b018d72,subnet-3bdcb65c,subnet-066e8b5d"
+*   (TODO NL: refactor usage example after KMS and Mutli-region support changes have been applied)
+* }
+*
+* provider "aws" {
+*   region = "us-west-2"
+* }
+* ```
+*
+*/
+
 /*
 * ------------------------------------------------------------------------------
 * Variables

@@ -8,7 +8,7 @@
 
 # Convention:
 # 1. A bucket should exist that contains role-based cloud-config.yaml
-#  e.g. concur-<cluster-name>-cloudinit/<roleProfile>/cloud-config.yaml
+#  e.g. scipian-<cluster-name>-cloudinit/<roleProfile>/cloud-config.yaml
 # 2. All machines should have instance role profile, with a policy that allows readonly access to this bucket.
 
 # Placement
@@ -22,7 +22,7 @@ instance_profile="$(curl -s http://169.254.169.254/latest/meta-data/iam/info \
   | sed 's#instance-profile/##')"
 
 # Bucket
-bucket="concur-${name}"
+bucket="scipian-${name}"
 
 # Determine our role
 role=$(echo "$instance_profile" | sed 's#${name}-##' | sed 's/-.*//')
